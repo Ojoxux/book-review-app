@@ -1,12 +1,8 @@
 import "./App.css";
-import {
-  ChakraProvider,
-  Box,
-  VStack,
-  Heading,
-  Container,
-} from "@chakra-ui/react";
+import { Routes, Route } from "react-router-dom";
+import { ChakraProvider, Box, VStack, Container } from "@chakra-ui/react";
 import LoginForm from "./components/LoginForm";
+import SignupForm from "./components/SignupForm";
 
 function App() {
   return (
@@ -21,10 +17,10 @@ function App() {
             borderRadius="md"
             boxShadow="lg"
           >
-            <Heading as="h1" size="xl" textAlign="center">
-              ログイン
-            </Heading>
-            <LoginForm />
+            <Routes>
+              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/login" element={<LoginForm />} />
+            </Routes>
           </VStack>
         </Box>
       </Container>
