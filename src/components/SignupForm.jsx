@@ -8,8 +8,11 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import Compressor from "compressorjs";
 
 const SignupSchema = Yup.object().shape({
+  name: Yup.string().required("ユーザ名は必須です。"),
   email: Yup.string()
     .email("有効なメールアドレスを入力してください。")
     .required("メールアドレスは必須です。"),
@@ -18,18 +21,65 @@ const SignupSchema = Yup.object().shape({
     .required("パスワードは必須です。"),
 });
 
-const Signup = () => {
+const SignupForm = () => {
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      new Compressor(file, {
+        quality: 0.6,
+        success(result) {
+          console.log("リサイズされた画像:", result);
+          // ここでリサイズされた画像をどのように処理するかを追加
+        },
+        error(err) {
+          console.error("画像圧縮エラー:", err.message);
+        },
+      });
+    }
+  };
+
+  const handleSignup = async (values) => {
+    try {
+      const response = await fetch(
+        "https://railway.bookreview.techtrain.dev/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("ユーザー登録に失敗しました。");
+      }
+
+      const data = await response.json();
+      console.log("登録成功:", data);
+      // トークンを保存するなどの処理を追加
+    } catch (error) {
+      console.error("エラー:", error);
+      // エラーメッセージをUIに表示する処理を追加
+    }
+  };
+
   return (
     <Formik
-      initialValues={{ email: "", password: "" }}
+      initialValues={{ name: "", email: "", password: "" }}
       validationSchema={SignupSchema}
-      onSubmit={(values) => {
-        console.log("ユーザー登録:", values);
-      }}
+      onSubmit={handleSignup}
     >
       {({ errors, touched }) => (
         <Form>
           <VStack spacing={4} align="stretch">
+            <FormControl isInvalid={errors.name && touched.name}>
+              <FormLabel htmlFor="name">ユーザ名</FormLabel>
+              <Field as={Input} id="name" name="name" type="text" />
+              {errors.name && touched.name ? (
+                <Text color="red.500">{errors.name}</Text>
+              ) : null}
+            </FormControl>
             <FormControl isInvalid={errors.email && touched.email}>
               <FormLabel htmlFor="email">メールアドレス</FormLabel>
               <Field as={Input} id="email" name="email" type="email" />
@@ -44,9 +94,27 @@ const Signup = () => {
                 <Text color="red.500">{errors.password}</Text>
               ) : null}
             </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="avatar">アバター</FormLabel>
+              <Input
+                id="avatar"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+            </FormControl>
             <Button type="submit" colorScheme="blue" size="lg" width="100%">
               登録
             </Button>
+            <Text>
+              すでにアカウントをお持ちですか？{" "}
+              <Link
+                to="/login"
+                style={{ color: "blue", textDecoration: "underline" }}
+              >
+                ログイン
+              </Link>
+            </Text>
           </VStack>
         </Form>
       )}
@@ -54,4 +122,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignupForm;
