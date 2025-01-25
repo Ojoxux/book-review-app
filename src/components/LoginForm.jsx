@@ -8,6 +8,7 @@ import {
   Text,
   InputGroup,
   InputRightElement,
+  useToast,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
@@ -16,6 +17,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const toast = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +28,14 @@ const LoginForm = () => {
     } else {
       setError('');
       console.log('ログイン試行:', email, password);
+      toast({
+        title: 'ログイン成功',
+        description: 'ようこそ！',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
     }
   };
 
