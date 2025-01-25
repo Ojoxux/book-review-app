@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   FormControl,
   FormLabel,
@@ -8,23 +8,24 @@ import {
   Text,
   InputGroup,
   InputRightElement,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {
-      setError("メールアドレスとパスワードを入力してください。");
+      setError('メールアドレスとパスワードを入力してください。');
     } else if (!isValidEmail(email)) {
-      setError("有効なメールアドレスを入力してください。");
+      setError('有効なメールアドレスを入力してください。');
     } else {
-      setError("");
-      console.log("ログイン試行:", email, password);
+      setError('');
+      console.log('ログイン試行:', email, password);
     }
   };
 
@@ -45,6 +46,7 @@ const LoginForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your-email@example.com"
+            data-testid="email-input"
           />
         </FormControl>
         <FormControl isRequired>
@@ -52,14 +54,15 @@ const LoginForm = () => {
           <InputGroup>
             <Input
               id="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="パスワードを入力"
+              data-testid="password-input"
             />
             <InputRightElement width="4.5rem">
               <Button h="1.75rem" size="sm" onClick={toggleShowPassword}>
-                {showPassword ? "隠す" : "表示"}
+                {showPassword ? '隠す' : '表示'}
               </Button>
             </InputRightElement>
           </InputGroup>
@@ -69,9 +72,24 @@ const LoginForm = () => {
             {error}
           </Text>
         )}
-        <Button type="submit" colorScheme="blue" size="lg" width="100%">
+        <Button
+          type="submit"
+          colorScheme="blue"
+          size="lg"
+          width="100%"
+          data-testid="login-button"
+        >
           ログイン
         </Button>
+        <Text>
+          アカウントをお持ちでないですか？{' '}
+          <Link
+            to="/signup"
+            style={{ color: 'blue', textDecoration: 'underline' }}
+          >
+            ログイン
+          </Link>
+        </Text>
       </VStack>
     </form>
   );
