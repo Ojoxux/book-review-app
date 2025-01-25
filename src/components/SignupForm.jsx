@@ -1,5 +1,5 @@
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 import {
   FormControl,
   FormLabel,
@@ -7,32 +7,34 @@ import {
   Button,
   VStack,
   Text,
-} from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import Compressor from "compressorjs";
+  useToast,
+} from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
+import Compressor from 'compressorjs';
 
 const SignupSchema = Yup.object().shape({
-  name: Yup.string().required("ユーザ名は必須です。"),
+  name: Yup.string().required('ユーザ名は必須です。'),
   email: Yup.string()
-    .email("有効なメールアドレスを入力してください。")
-    .required("メールアドレスは必須です。"),
+    .email('有効なメールアドレスを入力してください。')
+    .required('メールアドレスは必須です。'),
   password: Yup.string()
-    .min(6, "パスワードは6文字以上である必要があります。")
-    .required("パスワードは必須です。"),
+    .min(6, 'パスワードは6文字以上である必要があります。')
+    .required('パスワードは必須です。'),
 });
 
 const SignupForm = () => {
+  const toast = useToast();
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       new Compressor(file, {
         quality: 0.6,
         success(result) {
-          console.log("リサイズされた画像:", result);
+          console.log('リサイズされた画像:', result);
           // ここでリサイズされた画像をどのように処理するかを追加
         },
         error(err) {
-          console.error("画像圧縮エラー:", err.message);
+          console.error('画像圧縮エラー:', err.message);
         },
       });
     }
@@ -41,32 +43,46 @@ const SignupForm = () => {
   const handleSignup = async (values) => {
     try {
       const response = await fetch(
-        "https://railway.bookreview.techtrain.dev/users",
+        'https://railway.bookreview.techtrain.dev/users',
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(values),
         }
       );
 
       if (!response.ok) {
-        throw new Error("ユーザー登録に失敗しました。");
+        throw new Error('ユーザー登録に失敗しました。');
       }
 
       const data = await response.json();
-      console.log("登録成功:", data);
-      // トークンを保存するなどの処理を追加
+      console.log('登録成功:', data);
+      toast({
+        title: 'アカウント作成成功',
+        description: 'ユーザー登録が完了しました！',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
     } catch (error) {
-      console.error("エラー:", error);
-      // エラーメッセージをUIに表示する処理を追加
+      console.error('エラー:', error);
+      toast({
+        title: 'エラー',
+        description: error.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
     }
   };
 
   return (
     <Formik
-      initialValues={{ name: "", email: "", password: "" }}
+      initialValues={{ name: '', email: '', password: '' }}
       validationSchema={SignupSchema}
       onSubmit={handleSignup}
     >
@@ -107,10 +123,10 @@ const SignupForm = () => {
               登録
             </Button>
             <Text>
-              すでにアカウントをお持ちですか？{" "}
+              すでにアカウントをお持ちですか？{' '}
               <Link
                 to="/login"
-                style={{ color: "blue", textDecoration: "underline" }}
+                style={{ color: 'blue', textDecoration: 'underline' }}
               >
                 ログイン
               </Link>
